@@ -12,7 +12,7 @@ static int pom_completed_ref = 0;
 Window *window;
 MenuLayer *menu_layer;
 
-int poms_achieved[7] = {0,0,0,0,0,0,0};
+int poms_achieved[7];
 
 char* string_poms0 = "Complete: -1/-1";
 char* string_poms1 = "Complete: -1/-1";
@@ -21,10 +21,10 @@ char* string_poms3 = "Complete: -1/-1";
 char* string_poms4 = "Complete: -1/-1";
 char* string_poms5 = "Complete: -1/-1";
 char* string_poms6 = "Complete: -1/-1";
-
+  
+/////////Input your tasks and target pomos here
 char task0[] = "PVC Planning";
 static int pom_target0 = 5;
-//snprintf(string_poms1, 50, "Complete: %d, Remaining: %d", pom_target1, pom_achieved1);
 
 char task1[] = "Study China 101R";
 int pom_target1 = 7;
