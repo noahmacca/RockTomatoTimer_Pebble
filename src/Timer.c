@@ -2,6 +2,10 @@
 #include "Timer.h"
 #include "TaskMenu.h"
 
+static int poms_remain;
+static int poms_targ;
+static char* name_of_task;
+static int pom_complete = 0;
   
 Window *my_window;
 TextLayer *work_break_textlayer;
@@ -25,8 +29,8 @@ bool timer_on = false;
 bool is_work = false; 
 
 //Standard times
-int work_duration = 25 * 1000; //CHANGE BACK TO MINUTES
-int brk_duration = 5 * 1000; //CHANGE BACK TO MINUTES
+int work_duration = 5 * 1000;
+int brk_duration = 2 * 1000;
 
 //function definitions
 void select_click_handler(ClickRecognizerRef recognizer, void *context) {
@@ -88,7 +92,7 @@ void update_timer(void* content) {
     int minutes = (int)remaining_time / 60000 % 60;
   
     if(is_work == true) {
-      snprintf(timeText, 6, "%02d:%02d", minutes, seconds - 5); //CHANGE THIS 
+      snprintf(timeText, 6, "%02d:%02d", minutes, seconds - 2);
       update_feedback(s_res_pause_image, "Work");
     }
     if(!is_work) {
@@ -99,7 +103,8 @@ void update_timer(void* content) {
     
     if (remaining_time == brk_duration) {
       update_feedback(s_res_pause_image, "Break");
-
+      pom_complete += 1;
+      pass_pom_complete(pom_complete);
       vibes_double_pulse();
       is_work = false;
     }
@@ -173,7 +178,7 @@ void window_load(Window *window) {
   task_textlayer = text_layer_create(GRect(6, 7, 131, 32));
   text_layer_set_background_color(task_textlayer, GColorBlack);
   text_layer_set_text_color(task_textlayer, GColorWhite);
-  text_layer_set_text(task_textlayer, "Study CS 131");
+  text_layer_set_text(task_textlayer, name_of_task);
   text_layer_set_font(task_textlayer, s_res_gothic_14);
   layer_add_child(window_get_root_layer(my_window), (Layer *)task_textlayer);
   
@@ -196,10 +201,15 @@ void window_load(Window *window) {
   
   //TODO: Need to fit in //CURRENTLY STATIC - HOW TO GET IT DYNAMIC
   // poms_num_textlayer 
-  poms_num_textlayer = text_layer_create(GRect(94, 122, 24, 20));
+  poms_num_textlayer = text_layer_create(GRect(94, 122, 40, 20));
   text_layer_set_background_color(poms_num_textlayer, GColorBlack);
   text_layer_set_text_color(poms_num_textlayer, GColorWhite);
-  text_layer_set_text(poms_num_textlayer, "9");
+//   text_layer_set_text(poms_num_textlayer, "9");
+//   text_layer_set_font(poms_num_textlayer, s_res_gothic_14);
+  
+  char* poms_nums = "3/4";
+  snprintf(poms_nums, 6, "%01d/%01d", poms_remain, poms_targ);
+  text_layer_set_text(poms_num_textlayer, poms_nums); 
   text_layer_set_font(poms_num_textlayer, s_res_gothic_14);
   layer_add_child(window_get_root_layer(my_window), (Layer *)poms_num_textlayer);
   
@@ -225,6 +235,12 @@ void window_unload(Window *window) {
   bitmap_layer_destroy(play_pause_img);
   gbitmap_destroy(s_res_play_image);
   gbitmap_destroy(s_res_pause_image);
+}
+
+void pass_variables(int poms_remaining, int poms_target, char* task_name) {
+  poms_remain = poms_remaining;
+  poms_targ = poms_target;
+  name_of_task = task_name; //MESSING THE POINTER UP TODO
 }
 
 

@@ -2,58 +2,143 @@
 #include "TaskMenu.h"
 #include "Timer.h"
 
-  
+static int index;
+static int poms_remaining;
+static int poms_target;
+static char* task_name;
+static int pom_completed = 0;
+static int pom_completed_ref = 0;
+
 Window *window;
 MenuLayer *menu_layer;
-char str1[] = "Noay";
+
+int poms_achieved[7] = {0,0,0,0,0,0,0};
+
+char* string_poms0 = "Complete: -1/-1";
+char* string_poms1 = "Complete: -1/-1";
+char* string_poms2 = "Complete: -1/-1";
+char* string_poms3 = "Complete: -1/-1";
+char* string_poms4 = "Complete: -1/-1";
+char* string_poms5 = "Complete: -1/-1";
+char* string_poms6 = "Complete: -1/-1";
+
+char task0[] = "PVC Planning";
+static int pom_target0 = 5;
+//snprintf(string_poms1, 50, "Complete: %d, Remaining: %d", pom_target1, pom_achieved1);
+
+char task1[] = "Study China 101R";
+int pom_target1 = 7;
+
+char task2[] = "Talk to Fay";
+int pom_target2 = 2;
+
+char task3[] = "Meditate";
+int pom_target3 = 1;
+
+char task4[] = "Clean Up";
+int pom_target4 = 1;
+
+char task5[] = "Lunch";
+int pom_target5 = 1;
+
+char task6[] = "Dinner";
+int pom_target6 = 1;
+
 
 void draw_row_callback (GContext *ctx, Layer *cell_layer, MenuIndex *cell_index, void *callback_context) {
     // Which row is it?
     switch (cell_index->row) {
     case 0:
-        menu_cell_basic_draw(ctx, cell_layer, str1, "is good at hacking pebble watches for fun", NULL);
+        snprintf(string_poms0, 20, "Complete: %d/%d", poms_achieved[0], pom_target0);
+        menu_cell_basic_draw(ctx, cell_layer, task0, string_poms0, NULL);
         break;
     case 1:
-        menu_cell_basic_draw(ctx, cell_layer, "2. Orange", "Peel first!", NULL);
+        snprintf(string_poms1, 20, "Complete: %d/%d", poms_achieved[1], pom_target1);
+        menu_cell_basic_draw(ctx, cell_layer, task1, string_poms1, NULL);
         break;
     case 2:
-        menu_cell_basic_draw(ctx, cell_layer, "3. Pear", "Teardrop shaped!", NULL);
+        snprintf(string_poms2, 20, "Complete: %d/%d", poms_achieved[2], pom_target2);
+        menu_cell_basic_draw(ctx, cell_layer, task2, string_poms2, NULL);
         break;
     case 3:
-        menu_cell_basic_draw(ctx, cell_layer, "4. Banana", "Can be a gun!", NULL);
+        snprintf(string_poms3, 20, "Complete: %d/%d", poms_achieved[3], pom_target3);
+        menu_cell_basic_draw(ctx, cell_layer, task3, string_poms3, NULL);
         break;
     case 4:
-        menu_cell_basic_draw(ctx, cell_layer, "5. Tomato", "Extremely versatile!", NULL);
+        snprintf(string_poms4, 20, "Complete: %d/%d", poms_achieved[4], pom_target4);
+        menu_cell_basic_draw(ctx, cell_layer, task4, string_poms4, NULL);
         break;
     case 5:
-        menu_cell_basic_draw(ctx, cell_layer, "6. Grape", "Bunches of 'em!", NULL);
+        snprintf(string_poms5, 20, "Complete: %d/%d", poms_achieved[5], pom_target5);
+        menu_cell_basic_draw(ctx, cell_layer, task5, string_poms5, NULL);
         break;
     case 6:
-        menu_cell_basic_draw(ctx, cell_layer, "7. Melon", "Only three left!", NULL);
+        snprintf(string_poms6, 20, "Complete: %d/%d", poms_achieved[6], pom_target6);
+        menu_cell_basic_draw(ctx, cell_layer, task6, string_poms6, NULL);
         break;
     }
+}
+
+void select_click_callback (MenuLayer *menu_layer, MenuIndex *cell_index, void *callback_context) {
+  int which = cell_index->row;
+  switch(which) {
+    case 0:
+    poms_remaining = poms_achieved[0];
+    poms_target = pom_target0;
+    task_name = task0;
+    index = 0;
+        break;
+    case 1:
+    poms_remaining = poms_achieved[1];
+    poms_target = pom_target1;
+    task_name = task1;
+    index = 1;
+        break;
+    case 2:
+    poms_remaining = poms_achieved[2];
+    poms_target = pom_target2;
+    task_name = task2;
+    index = 2;
+        break;
+    case 3:
+    poms_remaining = poms_achieved[3];
+    poms_target = pom_target3;
+    task_name = task3;
+    index = 3;
+        break;
+    case 4:
+    poms_remaining = poms_achieved[4];
+    poms_target = pom_target4;
+    task_name = task4;
+    index = 4;
+        break;
+    case 5:
+    poms_remaining = poms_achieved[5];
+    poms_target = pom_target5;
+    task_name = task5;
+    index = 5;
+         break;
+    case 6:
+    poms_remaining = poms_achieved[6];
+    poms_target = pom_target6;
+    task_name = task6;
+    index = 6;
+        break;
+  }
+  pass_variables(poms_remaining, poms_target, task_name);
+  timer_init();
+  if (pom_completed > pom_completed_ref) {
+    poms_achieved[index] += 1; 
+    pom_completed_ref += 1;
+    menu_layer_reload_data(menu_layer); //This won't actually refresh the menu!!!!
+    menu_layer_reload_data(menu_layer); //This won't actually refresh the menu!!!!
+  }
 }
 
 uint16_t num_rows_callback (MenuLayer *menu_layer, uint16_t section_index, void *callback_context) {
   return 7;
 }
 
-
-void select_click_callback (MenuLayer *menu_layer, MenuIndex *cell_index, void *callback_context) {
-/*  int which = cell_index->row;
-  uint32_t segments[16] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-  for (int i = 0; i <= which; ++i) {
-    segments[2*i] = 200;
-    segments[(2*i)+1] = 100;
-  }
-  VibePattern pattern = {
-    .durations = segments,
-    .num_segments = 16
-  };
-  vibes_enqueue_custom_pattern(pattern);
-*/
-  timer_init();
-}
 
 void window_load1 (Window *window){
   GRect bounds = layer_get_bounds(window_get_root_layer(window));
@@ -85,3 +170,9 @@ void init_menu() {
 void deinit_menu() {
   window_destroy(window);
 }
+
+void pass_pom_complete (int pom_complete){
+  pom_completed = pom_complete;
+}
+
+
