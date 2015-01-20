@@ -29,8 +29,8 @@ bool timer_on = false;
 bool is_work = false; 
 
 //Standard times
-int work_duration = 5 * 1000;
-int brk_duration = 2 * 1000;
+int work_duration = 25 * 60 * 1000;
+int brk_duration = 5 * 60 * 1000;
 
 //function definitions
 void select_click_handler(ClickRecognizerRef recognizer, void *context) {
@@ -92,7 +92,7 @@ void update_timer(void* content) {
     int minutes = (int)remaining_time / 60000 % 60;
   
     if(is_work == true) {
-      snprintf(timeText, 6, "%02d:%02d", minutes, seconds - 2);
+      snprintf(timeText, 6, "%02d:%02d", minutes - 5, seconds);
       update_feedback(s_res_pause_image, "Work");
     }
     if(!is_work) {

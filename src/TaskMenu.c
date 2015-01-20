@@ -13,6 +13,7 @@ Window *window;
 MenuLayer *menu_layer;
 
 int poms_achieved[7];
+int buffer[7];
 
 char* string_poms0 = "Complete: -1/-1";
 char* string_poms1 = "Complete: -1/-1";
@@ -21,6 +22,9 @@ char* string_poms3 = "Complete: -1/-1";
 char* string_poms4 = "Complete: -1/-1";
 char* string_poms5 = "Complete: -1/-1";
 char* string_poms6 = "Complete: -1/-1";
+
+uint32_t Old_Data_key = 11111;
+uint32_t Data_key = 11112;
   
 /////////Input your tasks and target pomos here
 char task0[] = "PVC Planning";
@@ -158,6 +162,14 @@ void window_unload1 (Window *window) {
 }
 
 void init_menu() {
+  if (persist_exists(Data_key)) {
+    persist_read_data(Data_key, buffer, 32);
+    int i;
+    for ( i = 0; i <= 7; i++ ) {
+      poms_achieved[i] = buffer[i];
+    }
+    persist_delete (Old_Data_key); //Is this necessary or can I just go to a new key and the old memory will be overwritten?
+  }
   window = window_create();
   WindowHandlers handlers = {
     .load = window_load1,
@@ -169,6 +181,7 @@ void init_menu() {
 
 void deinit_menu() {
   window_destroy(window);
+  persist_write_data(Data_key, poms_achieved, 32);
 }
 
 void pass_pom_complete (int pom_complete){
